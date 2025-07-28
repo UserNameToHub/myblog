@@ -1,20 +1,19 @@
 package ru.yandex.practicum.service.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.ActiveProfiles;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.yandex.practicum.configuration.DataConfig;
-import ru.yandex.practicum.configuration.TestConfig;
 import ru.yandex.practicum.dto.PostCreateDto;
 import ru.yandex.practicum.dto.PostEditDto;
 import ru.yandex.practicum.exception.NotFoundException;
@@ -28,15 +27,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-
-@ContextConfiguration(classes = {DataConfig.class, TestConfig.class})
-@ExtendWith(SpringExtension.class)
-@Transactional(readOnly = true)
+@SpringBootTest
+@ActiveProfiles("test")
+@AutoConfigureMockMvc
 class PostServiceImplTest {
-    @Autowired
-    private PostService postService;
+    public PostService postService;
 
     private static MultipartFile multipartFile;
 
@@ -75,7 +70,6 @@ class PostServiceImplTest {
     }
 
     @Test
-    @Transactional
     void create() {
         Random random = new Random();
         textCode = random.nextInt(Integer.MAX_VALUE);
@@ -110,7 +104,6 @@ class PostServiceImplTest {
     }
 
     @Test
-    @Transactional
     void update() {
         Collection<Post> posts = postService.getAll("", 3, 10);
         assertThat(posts, not(empty()));
@@ -123,7 +116,6 @@ class PostServiceImplTest {
     }
 
     @Test
-    @Transactional
     void deleteById() {
         Collection<Post> posts = postService.getAll("", 1, 10);
         List<Post> postList = (List<Post>) posts;
